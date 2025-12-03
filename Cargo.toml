@@ -8,3 +8,6 @@ description = "Ariel OS runqueue implementation"
 [dependencies]
 # Put a symlink to creusot at the root of this repository
 creusot-contracts = { path = "creusot/creusot-contracts" }
+
+[lints.rust]
+unexpected_cfgs = { level = "warn", check-cfg = ['cfg(creusot)'] }
