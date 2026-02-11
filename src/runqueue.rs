@@ -5,10 +5,10 @@
 // after fixing Creusot's Default derive macro to support private fields,
 // or just replace with handwritten impl Default with some specs.
 use core::mem;
-use creusot_contracts::{
+use creusot_std::{
     logic::ops::NthBitLogic,
     model,
-    prelude::{Clone, PartialEq, /* Default, */ *},
+    prelude::{Clone, PartialEq, /* Default, */ Int, *},
     std::iter::IteratorSpec,
 };
 use std::cmp::Ordering;
@@ -609,6 +609,9 @@ mod clist {
     //!
     //! The array is used for "next" pointers, so each integer value in the array
     //! corresponds to one element, which can only be in one of the lists.
+
+    use creusot_std::prelude::*;
+
     #[derive(Debug, Copy, std::clone::Clone)]
     pub struct CList<const N_QUEUES: usize, const N_THREADS: usize> {
         pub tail: [u8; N_QUEUES],
@@ -638,8 +641,6 @@ mod clist {
             Self::new()
         }
     }
-
-    use creusot_contracts::prelude::*;
 
     impl<const N_QUEUES: usize, const N_THREADS: usize> CList<N_QUEUES, N_THREADS> {
         #[logic(open(super))]
