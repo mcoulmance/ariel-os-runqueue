@@ -64,7 +64,6 @@ impl From<RunqueueId> for usize {
 impl DeepModel for RunqueueId {
     type DeepModelTy = Int;
     #[logic]
-    #[trusted]
     fn deep_model(self) -> Self::DeepModelTy {
         self.0.deep_model()
     }
@@ -158,7 +157,6 @@ impl From<ThreadId> for usize {
 impl DeepModel for ThreadId {
     type DeepModelTy = Int;
     #[logic]
-    #[trusted]
     fn deep_model(self) -> Self::DeepModelTy {
         pearlite! { self.0@ }
     }
@@ -243,7 +241,6 @@ impl<const N_QUEUES: usize, const N_THREADS: usize> RunQueue<{ N_QUEUES }, { N_T
     }
 
     #[inline(always)]
-    #[trusted]
     #[bitwise_proof]
     #[requires(Self::valid_rq_id(rq@))]
     fn unset_bit_rq(&mut self, rq: u8) {
@@ -251,7 +248,6 @@ impl<const N_QUEUES: usize, const N_THREADS: usize> RunQueue<{ N_QUEUES }, { N_T
     }
 
     #[inline(always)]
-    #[trusted]
     #[bitwise_proof]
     #[requires(Self::valid_rq_id(rq@))]
     #[ensures(self.valid_rq(rq@) ==> (^self).valid_rq(rq@))]
@@ -472,23 +468,13 @@ impl<const N_QUEUES: usize, const N_THREADS: usize> RunQueue<{ N_QUEUES }, { N_T
     }
 }
 
-#[inline(always)]
-#[trusted]
-#[ensures(forall<x: Int> 0 <= x && x < result@ - 1 ==> !val.nth_bit(x))]
-#[ensures(val@ != 0 ==> val.nth_bit(result@))]
-#[ensures(result@ <= USIZE_BITS@)]
-fn leadz(val: usize) -> u32 {
-    val.leading_zeros()
-}
-
 #[inline]
 #[trusted]
 #[bitwise_proof]
-#[ensures(leadz.postcondition((val,), USIZE_BITS as u32 - result))]
 #[ensures(forall<m: usize> valid_cache(val, m) ==> result < m as u32)]
 #[ensures(val@ > 0 ==> result@ > 0)]
 fn ffs(val: usize) -> u32 {
-    USIZE_BITS as u32 - leadz(val)
+    USIZE_BITS as u32 - val.leading_zeros()
 }
 
 #[logic]
